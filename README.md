@@ -9,7 +9,6 @@ This project allows Qodly Studio developers to use their own HTTP handlers to up
 - **Customizable File Upload**: Easily configure the component to work with any backend service.
 - **Drag and Drop Support**: Users can drag files directly into the DropZone for quick uploads.
 - **Multiple File Selection**: Supports uploading multiple files at once.
-- **Real-time Feedback**: Provides instant feedback on upload success or failure.
 - **File Type and Size Filtering**: Customize accepted file types and size limits to ensure valid uploads.
 
 ## Properties
@@ -17,6 +16,7 @@ This project allows Qodly Studio developers to use their own HTTP handlers to up
 | **Property Name** | **Type** | **Description**                                        |
 | ----------------- | -------- | ------------------------------------------------------ |
 | **URL**           | `String` | The API endpoint or HTTP handler URL for file uploads. |
+| **Allowed Files** | `String` | .                                                      |
 
 ## Custom CSS
 

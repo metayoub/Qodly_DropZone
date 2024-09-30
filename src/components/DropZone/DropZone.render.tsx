@@ -5,8 +5,15 @@ import { FC, useState, DragEvent, useRef } from 'react';
 import { IDropZoneProps } from './DropZone.config';
 import axios from 'axios';
 
-const DropZone: FC<IDropZoneProps> = ({ url = '', style, className, classNames = [] }) => {
-  const { connect } = useRenderer();
+const DropZone: FC<IDropZoneProps> = ({
+  url = '',
+  allowedFileTypes = '*',
+  style,
+  className,
+  classNames = [],
+  disabled,
+}) => {
+  const { connect } = useRenderer({ autoBindEvents: !disabled });
   const [dragging, setDragging] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
   const [statusMessage, setStatusMessage] = useState<string>('');
@@ -17,16 +24,19 @@ const DropZone: FC<IDropZoneProps> = ({ url = '', style, className, classNames =
   };
 
   const handleFileSelection = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
+    if (!disabled && e.target.files) {
       const filesArray = Array.from(e.target.files);
 
       // Filter for accepted file types and sizes (e.g., max 5MB)
-      /*const acceptedFiles = filesArray.filter(
-        (file) => file.type === 'image/png' || file.type === 'image/jpeg' // Example: Only accept PNG and JPEG
-      ).filter(file => file.size <= 5 * 1024 * 1024); // Example: Max size 5MB*/
+      const acceptedFiles = filesArray.filter((file) => {
+        const fileTypePattern = new RegExp(
+          allowedFileTypes.replace(/,/g, '|').replace(/\*/g, '.*'),
+        );
+        return fileTypePattern.test(file.type);
+      });
 
       setFiles((prevFiles) => {
-        const newFiles = filesArray.filter(
+        const newFiles = acceptedFiles.filter(
           (newFile) =>
             !prevFiles.some(
               (existingFile) =>
@@ -43,16 +53,18 @@ const DropZone: FC<IDropZoneProps> = ({ url = '', style, className, classNames =
     e.preventDefault();
     setDragging(false);
 
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+    if (!disabled && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       const filesArray = Array.from(e.dataTransfer.files);
 
-      // Filter for accepted file types and sizes (e.g., max 5MB)
-      /*const acceptedFiles = filesArray.filter(
-        (file) => file.type === 'image/png' || file.type === 'image/jpeg' // Example: Only accept PNG and JPEG
-      ).filter(file => file.size <= 5 * 1024 * 1024); // Example: Max size 5MB*/
+      const acceptedFiles = filesArray.filter((file) => {
+        const fileTypePattern = new RegExp(
+          allowedFileTypes.replace(/,/g, '|').replace(/\*/g, '.*'),
+        );
+        return fileTypePattern.test(file.type);
+      });
 
       setFiles((prevFiles) => {
-        const newFiles = filesArray.filter(
+        const newFiles = acceptedFiles.filter(
           (newFile) =>
             !prevFiles.some(
               (existingFile) =>
@@ -92,7 +104,7 @@ const DropZone: FC<IDropZoneProps> = ({ url = '', style, className, classNames =
 
   const handleUpload = (event: any) => {
     event.stopPropagation();
-    if (files.length === 0 || url === '') return; // in case.
+    if (disabled || files.length === 0 || url === '') return; // in case.
 
     const formData = new FormData();
     files.forEach((file) => {
@@ -119,8 +131,8 @@ const DropZone: FC<IDropZoneProps> = ({ url = '', style, className, classNames =
       })}
       style={{
         ...style,
-        borderColor: dragging ? 'purple' : style?.borderColor,
-        color: dragging ? 'purple' : style?.color,
+        borderColor: !disabled && dragging ? 'purple' : style?.borderColor,
+        color: !disabled && dragging ? 'purple' : style?.color,
       }}
       onClick={handleClick}
       onDrop={handleDrop}
@@ -132,7 +144,7 @@ const DropZone: FC<IDropZoneProps> = ({ url = '', style, className, classNames =
         <p style={{ color: statusMessage === 'Upload successful!' ? 'green' : 'red' }}>
           {statusMessage}
         </p> // Display the status message
-      ) : dragging ? (
+      ) : !disabled && dragging ? (
         <p>Drop files here...</p>
       ) : (
         <p>Drag & drop files here, or click to select files</p>
@@ -140,9 +152,11 @@ const DropZone: FC<IDropZoneProps> = ({ url = '', style, className, classNames =
       <input
         ref={inputRef}
         type="file"
+        accept={allowedFileTypes}
         multiple
         style={{ display: 'none' }}
         onChange={handleFileSelection}
+        disabled
       />
       <div className="selected-files text-left">
         {files.length > 0 && (

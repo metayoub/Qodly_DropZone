@@ -8,6 +8,22 @@ const commonSettings: TSetting[] = [
     type: ESetting.TEXT_FIELD,
     defaultValue: '',
   },
+  {
+    key: 'allowedFileTypes',
+    label: 'Allowed File Types',
+    type: ESetting.SELECT,
+    defaultValue: '*',
+    options: [
+      { label: 'All', value: '*' },
+      { label: 'Images', value: 'image/*' },
+      { label: 'Video', value: 'video/*' },
+      { label: 'Audio', value: 'audio/*' },
+      { label: 'Documents', value: 'application/*' },
+      { label: 'Text', value: 'text/*' },
+      { label: 'PDF', value: 'application/pdf' },
+      { label: 'ZIP', value: 'application/zip' },
+    ],
+  },
 ];
 
 const Settings: TSetting[] = [
