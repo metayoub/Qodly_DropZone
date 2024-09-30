@@ -73,7 +73,7 @@ self .selected-file-title:hover {
 
 self .selected-file-icon {
   cursor: pointer;
-  color: red;
+  color: aqua;
   font-weight: bold;
 }
 

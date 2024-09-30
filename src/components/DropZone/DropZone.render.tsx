@@ -156,7 +156,7 @@ const DropZone: FC<IDropZoneProps> = ({
         multiple
         style={{ display: 'none' }}
         onChange={handleFileSelection}
-        disabled
+        disabled={disabled}
       />
       <div className="selected-files text-left">
         {files.length > 0 && (
