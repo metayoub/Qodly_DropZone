@@ -27,28 +27,16 @@ export default {
         value: 'onclick',
       },
       {
-        label: 'On Blur',
-        value: 'onblur',
+        label: 'On Upload',
+        value: 'onupload',
       },
       {
-        label: 'On Focus',
-        value: 'onfocus',
+        label: 'On File Select',
+        value: 'onfileselect',
       },
       {
-        label: 'On MouseEnter',
-        value: 'onmouseenter',
-      },
-      {
-        label: 'On MouseLeave',
-        value: 'onmouseleave',
-      },
-      {
-        label: 'On KeyDown',
-        value: 'onkeydown',
-      },
-      {
-        label: 'On KeyUp',
-        value: 'onkeyup',
+        label: 'On File Remove',
+        value: 'onfileremove',
       },
     ],
     datasources: {
@@ -73,5 +61,5 @@ export default {
 } as T4DComponentConfig<IDropZoneProps>;
 
 export interface IDropZoneProps extends webforms.ComponentProps {
-  name?: string;
+  url?: string;
 }

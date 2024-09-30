@@ -3,11 +3,13 @@ import cn from 'classnames';
 import { FC, useState, DragEvent, useRef } from 'react';
 
 import { IDropZoneProps } from './DropZone.config';
+import axios from 'axios';
 
-const DropZone: FC<IDropZoneProps> = ({ style, className, classNames = [] }) => {
+const DropZone: FC<IDropZoneProps> = ({ url = '', style, className, classNames = [] }) => {
   const { connect } = useRenderer();
   const [dragging, setDragging] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
+  const [statusMessage, setStatusMessage] = useState<string>('');
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleClick = () => {
@@ -34,6 +36,7 @@ const DropZone: FC<IDropZoneProps> = ({ style, className, classNames = [] }) => 
         return [...prevFiles, ...newFiles];
       });
       e.target.value = '';
+      setStatusMessage('');
     }
   };
   const handleDrop = (e: DragEvent<HTMLDivElement>) => {
@@ -59,6 +62,7 @@ const DropZone: FC<IDropZoneProps> = ({ style, className, classNames = [] }) => 
         return [...prevFiles, ...newFiles];
       });
       e.dataTransfer.clearData();
+      setStatusMessage('');
     }
   };
 
@@ -81,46 +85,54 @@ const DropZone: FC<IDropZoneProps> = ({ style, className, classNames = [] }) => 
     }
   };
 
-  /*useEffect(() => {
-    if (!ds) return;
-
-    const listener = async () => {
-      const v = await ds.getValue<string>();
-    };
-
-    listener();
-
-    ds.addListener('changed', listener);
-
-    return () => {
-      ds.removeListener('changed', listener);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ds]);*/
-
   const handleRemoveFile = (event: any, file: File) => {
     event.stopPropagation();
     setFiles((prev) => prev.filter((f) => f !== file));
   };
 
+  const handleUpload = (event: any) => {
+    event.stopPropagation();
+    if (files.length === 0 || url === '') return; // in case.
+
+    const formData = new FormData();
+    files.forEach((file) => {
+      formData.append('files', file);
+    });
+
+    axios
+      .post(url, formData)
+      .then((_response) => {
+        setStatusMessage('Upload successful!');
+        setFiles([]); // Clear selected files after upload if desired
+      })
+      .catch((error) => {
+        console.error('Error during upload:', error);
+        setStatusMessage('Upload failed. Please try again.');
+      });
+  };
+
   return (
     <div
       ref={connect}
+      className={cn(className, classNames, {
+        dragging,
+      })}
       style={{
         ...style,
         borderColor: dragging ? 'purple' : style?.borderColor,
         color: dragging ? 'purple' : style?.color,
       }}
-      className={cn(className, classNames, {
-        dragging,
-      })}
       onClick={handleClick}
       onDrop={handleDrop}
       onDragOver={handleDragOver}
       onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}
     >
-      {dragging ? (
+      {statusMessage ? (
+        <p style={{ color: statusMessage === 'Upload successful!' ? 'green' : 'red' }}>
+          {statusMessage}
+        </p> // Display the status message
+      ) : dragging ? (
         <p>Drop files here...</p>
       ) : (
         <p>Drag & drop files here, or click to select files</p>
@@ -152,6 +164,17 @@ const DropZone: FC<IDropZoneProps> = ({ style, className, classNames = [] }) => 
           </>
         )}
       </div>
+      {files.length > 0 && (
+        <div className="upload-files text-right">
+          <button
+            style={{ color: style?.color, borderColor: style?.borderColor }}
+            className="upload-button bg-transparent font-semibold py-2 px-4 border rounded"
+            onClick={handleUpload}
+          >
+            Upload
+          </button>
+        </div>
+      )}
     </div>
   );
 };

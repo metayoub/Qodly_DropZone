@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@ws-ui/webform-editor": "0.3.20",
+    "axios": "^1.7.7",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
   },

@@ -3,10 +3,10 @@ import { BASIC_SETTINGS, DEFAULT_SETTINGS, load } from '@ws-ui/webform-editor';
 
 const commonSettings: TSetting[] = [
   {
-    key: 'name',
-    label: 'Name',
+    key: 'url',
+    label: 'Upload URL',
     type: ESetting.TEXT_FIELD,
-    defaultValue: 'Qodly',
+    defaultValue: '',
   },
 ];
 
