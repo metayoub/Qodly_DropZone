@@ -13,10 +13,32 @@ This project allows Qodly Studio developers to use their own HTTP handlers to up
 
 ## Properties
 
-| **Property Name** | **Type** | **Description**                                        |
-| ----------------- | -------- | ------------------------------------------------------ |
-| **URL**           | `String` | The API endpoint or HTTP handler URL for file uploads. |
-| **Allowed Files** | `String` | .                                                      |
+| **Property Name** | **Type** | **Description**                                                   |
+| ----------------- | -------- | ----------------------------------------------------------------- |
+| **URL**           | `String` | The API endpoint or HTTP handler URL to which files are uploaded. |
+| **Allowed Files** | `String` | Specifies the types of files allowed for upload (e.g., image/\*). |
+
+## Events
+
+| **Event Name**        | **Event data**    | **Description**                                       |
+| --------------------- | ----------------- | ----------------------------------------------------- |
+| **On Upload**         | File information  | Triggered when the upload process is initiated.       |
+| **On Upload Success** | API response data | Triggered when the file upload is successful.         |
+| **On Upload Failure** | API error message | Triggered when the file upload fails.                 |
+| **On File Select**    | File information  | Triggered when a file or multiple files are selected. |
+| **On File Remove**    | File information  | Triggered when a file is removed from the selection.  |
+
+### how to get event daya:
+
+```javascript
+  var event : object
+  var data : object
+
+  event = webEvent
+  data = event.data
+```
+
+For more information on working with event data, see the [Qodly web event documentation](https://developer.qodly.com/docs/language/commands/webEvent).
 
 ## Custom CSS
 

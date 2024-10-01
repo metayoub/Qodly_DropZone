@@ -5,6 +5,13 @@ import { FC, useState, DragEvent, useRef } from 'react';
 import { IDropZoneProps } from './DropZone.config';
 import axios from 'axios';
 
+interface FileDetails {
+  name: string;
+  size: number;
+  type: string;
+  lastModified: number;
+  webkitRelativePath?: string;
+}
 const DropZone: FC<IDropZoneProps> = ({
   url = '',
   allowedFileTypes = '*',
@@ -13,11 +20,30 @@ const DropZone: FC<IDropZoneProps> = ({
   classNames = [],
   disabled,
 }) => {
-  const { connect } = useRenderer({ autoBindEvents: !disabled });
+  const { connect, emit } = useRenderer({
+    omittedEvents: [
+      'onupload',
+      'onuploadsuccess',
+      'onuploadfailure',
+      'onfileselect',
+      'onfileremove',
+    ],
+    autoBindEvents: !disabled,
+  });
   const [dragging, setDragging] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
   const [statusMessage, setStatusMessage] = useState<string>('');
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const fileToObject = (file: File): FileDetails => {
+    return {
+      name: file.name,
+      size: file.size,
+      type: file.type,
+      lastModified: file.lastModified,
+      webkitRelativePath: file.webkitRelativePath,
+    };
+  };
 
   const handleClick = () => {
     inputRef.current?.click();
@@ -26,7 +52,10 @@ const DropZone: FC<IDropZoneProps> = ({
   const handleFileSelection = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!disabled && e.target.files) {
       const filesArray = Array.from(e.target.files);
-
+      emit(
+        'onfileselect',
+        filesArray.map((file) => fileToObject(file)),
+      );
       // Filter for accepted file types and sizes (e.g., max 5MB)
       const acceptedFiles = filesArray.filter((file) => {
         const fileTypePattern = new RegExp(
@@ -55,7 +84,10 @@ const DropZone: FC<IDropZoneProps> = ({
 
     if (!disabled && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       const filesArray = Array.from(e.dataTransfer.files);
-
+      emit(
+        'onfileselect',
+        filesArray.map((file) => fileToObject(file)),
+      );
       const acceptedFiles = filesArray.filter((file) => {
         const fileTypePattern = new RegExp(
           allowedFileTypes.replace(/,/g, '|').replace(/\*/g, '.*'),
@@ -99,11 +131,16 @@ const DropZone: FC<IDropZoneProps> = ({
 
   const handleRemoveFile = (event: any, file: File) => {
     event.stopPropagation();
+    emit('onfileremove', fileToObject(file));
     setFiles((prev) => prev.filter((f) => f !== file));
   };
 
   const handleUpload = (event: any) => {
     event.stopPropagation();
+    emit(
+      'onupload',
+      files.map((file) => fileToObject(file)),
+    );
     if (disabled || files.length === 0 || url === '') return; // in case.
 
     const formData = new FormData();
@@ -113,12 +150,14 @@ const DropZone: FC<IDropZoneProps> = ({
 
     axios
       .post(url, formData)
-      .then((_response) => {
+      .then((response) => {
         setStatusMessage('Upload successful!');
+        emit('onuploadsuccess', response.data);
         setFiles([]); // Clear selected files after upload if desired
       })
       .catch((error) => {
         console.error('Error during upload:', error);
+        emit('onuploadfailure', error);
         setStatusMessage('Upload failed. Please try again.');
       });
   };

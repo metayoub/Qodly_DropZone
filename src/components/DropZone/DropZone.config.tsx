@@ -23,12 +23,16 @@ export default {
     icon: MdOutlineCloudUpload,
     events: [
       {
-        label: 'On Click',
-        value: 'onclick',
-      },
-      {
         label: 'On Upload',
         value: 'onupload',
+      },
+      {
+        label: 'On Upload Success',
+        value: 'onuploadsuccess',
+      },
+      {
+        label: 'On Upload Failure',
+        value: 'onuploadfailure',
       },
       {
         label: 'On File Select',
