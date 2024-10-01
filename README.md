@@ -28,7 +28,9 @@ This project allows Qodly Studio developers to use their own HTTP handlers to up
 | **On File Select**    | File information  | Triggered when a file or multiple files are selected. |
 | **On File Remove**    | File information  | Triggered when a file is removed from the selection.  |
 
-### how to get event daya:
+### How to Get Event Data
+
+To access event data during an event, you can bind it to a function. Here’s an example:
 
 ```javascript
   var event : object
