@@ -13,10 +13,11 @@ This project allows Qodly Studio developers to use their own HTTP handlers to up
 
 ## Properties
 
-| **Property Name** | **Type** | **Description**                                                   |
-| ----------------- | -------- | ----------------------------------------------------------------- |
-| **URL**           | `String` | The API endpoint or HTTP handler URL to which files are uploaded. |
-| **Allowed Files** | `String` | Specifies the types of files allowed for upload (e.g., image/\*). |
+| **Property Name** | **Type** | **Description**                                                                    |
+| ----------------- | -------- | ---------------------------------------------------------------------------------- |
+| **URL**           | `String` | The API endpoint or HTTP handler URL to which files are uploaded.                  |
+| **Allowed Files** | `String` | Specifies the types of files allowed for upload (e.g., image/\*).                  |
+| **File Limit**    | `Number` | Limits the number of files that can be uploaded. If set to `0`, there is no limit. |
 
 ## Events
 

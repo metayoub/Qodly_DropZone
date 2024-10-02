@@ -24,6 +24,12 @@ const commonSettings: TSetting[] = [
       { label: 'ZIP', value: 'application/zip' },
     ],
   },
+  {
+    key: 'fileLimit',
+    label: 'File Limit',
+    type: ESetting.NUMBER_FIELD,
+    defaultValue: 0,
+  },
 ];
 
 const Settings: TSetting[] = [

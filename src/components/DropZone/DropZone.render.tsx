@@ -15,6 +15,7 @@ interface FileDetails {
 const DropZone: FC<IDropZoneProps> = ({
   url = '',
   allowedFileTypes = '*',
+  fileLimit = 0,
   style,
   className,
   classNames = [],
@@ -56,7 +57,6 @@ const DropZone: FC<IDropZoneProps> = ({
         'onfileselect',
         filesArray.map((file) => fileToObject(file)),
       );
-      // Filter for accepted file types and sizes (e.g., max 5MB)
       const acceptedFiles = filesArray.filter((file) => {
         const fileTypePattern = new RegExp(
           allowedFileTypes.replace(/,/g, '|').replace(/\*/g, '.*'),
@@ -72,10 +72,16 @@ const DropZone: FC<IDropZoneProps> = ({
                 existingFile.name === newFile.name && existingFile.size === newFile.size,
             ),
         );
+
+        if (fileLimit > 0 && prevFiles.length + newFiles.length > fileLimit) {
+          setStatusMessage(`You can only upload up to ${fileLimit} files.`);
+          return prevFiles;
+        }
+
+        setStatusMessage('');
         return [...prevFiles, ...newFiles];
       });
       e.target.value = '';
-      setStatusMessage('');
     }
   };
   const handleDrop = (e: DragEvent<HTMLDivElement>) => {
@@ -103,10 +109,15 @@ const DropZone: FC<IDropZoneProps> = ({
                 existingFile.name === newFile.name && existingFile.size === newFile.size,
             ),
         );
+        if (fileLimit > 0 && prevFiles.length + newFiles.length > fileLimit) {
+          setStatusMessage(`You can only upload up to ${fileLimit} files.`);
+          return prevFiles;
+        }
+
+        setStatusMessage('');
         return [...prevFiles, ...newFiles];
       });
       e.dataTransfer.clearData();
-      setStatusMessage('');
     }
   };
 
