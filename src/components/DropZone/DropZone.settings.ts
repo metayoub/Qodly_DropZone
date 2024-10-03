@@ -30,6 +30,12 @@ const commonSettings: TSetting[] = [
     type: ESetting.NUMBER_FIELD,
     defaultValue: 0,
   },
+  {
+    key: 'fileSizeLimit',
+    label: 'File Size Limit',
+    type: ESetting.NUMBER_FIELD,
+    defaultValue: 0,
+  },
 ];
 
 const Settings: TSetting[] = [

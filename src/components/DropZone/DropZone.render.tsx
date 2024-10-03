@@ -16,6 +16,7 @@ const DropZone: FC<IDropZoneProps> = ({
   url = '',
   allowedFileTypes = '*',
   fileLimit = 0,
+  fileSizeLimit = 0,
   style,
   className,
   classNames = [],
@@ -73,6 +74,19 @@ const DropZone: FC<IDropZoneProps> = ({
             ),
         );
 
+        let isFileSizeAccepted = true;
+        let fileName = '';
+        newFiles.forEach((file) => {
+          if (isFileSizeAccepted) {
+            isFileSizeAccepted = fileSizeLimit === 0 || file.size <= fileSizeLimit * 1024 * 1024;
+            fileName = !isFileSizeAccepted ? file.name : fileName;
+          }
+        });
+        if (!isFileSizeAccepted) {
+          setStatusMessage(`File "${fileName}" exceeds the size limit of ${fileSizeLimit} MB.`);
+          return prevFiles;
+        }
+
         if (fileLimit > 0 && prevFiles.length + newFiles.length > fileLimit) {
           setStatusMessage(`You can only upload up to ${fileLimit} files.`);
           return prevFiles;
@@ -109,6 +123,21 @@ const DropZone: FC<IDropZoneProps> = ({
                 existingFile.name === newFile.name && existingFile.size === newFile.size,
             ),
         );
+
+        let isFileSizeAccepted = true;
+        let fileName = '';
+        newFiles.forEach((file) => {
+          if (isFileSizeAccepted) {
+            isFileSizeAccepted = fileSizeLimit === 0 || file.size <= fileSizeLimit * 1024 * 1024;
+            fileName = !isFileSizeAccepted ? file.name : fileName;
+          }
+        });
+
+        if (!isFileSizeAccepted) {
+          setStatusMessage(`File "${fileName}" exceeds the size limit of ${fileSizeLimit} MB.`);
+          return prevFiles;
+        }
+
         if (fileLimit > 0 && prevFiles.length + newFiles.length > fileLimit) {
           setStatusMessage(`You can only upload up to ${fileLimit} files.`);
           return prevFiles;

@@ -50,6 +50,7 @@ export default {
   defaultProps: {
     allowedFileTypes: '*',
     fileLimit: 0,
+    fileSizeLimit: 0,
     style: {
       paddingTop: '20px',
       paddingBottom: '20px',
@@ -70,4 +71,5 @@ export interface IDropZoneProps extends webforms.ComponentProps {
   url?: string;
   allowedFileTypes?: string;
   fileLimit?: number;
+  fileSizeLimit?: number;
 }
