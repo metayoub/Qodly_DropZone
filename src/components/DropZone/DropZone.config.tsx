@@ -43,9 +43,7 @@ export default {
         value: 'onfileremove',
       },
     ],
-    datasources: {
-      declarations: [{ key: 'datasource', iterable: true }],
-    },
+    datasources: {},
   },
   defaultProps: {
     allowedFileTypes: '*',

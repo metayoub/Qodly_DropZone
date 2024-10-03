@@ -45,7 +45,7 @@ const Settings: TSetting[] = [
     type: ESetting.GROUP,
     components: commonSettings,
   },
-  ...DEFAULT_SETTINGS,
+  ...load(DEFAULT_SETTINGS).filter('datasource'),
 ];
 
 export const BasicSettings: TSetting[] = [
