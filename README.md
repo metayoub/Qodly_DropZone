@@ -60,6 +60,10 @@ self .dropZoneHeader {
   flex-direction: column;
 }
 
+self .dropZoneHeader:hover {
+  background-color: #43ada80F;
+}
+
 self .dropZoneHeader p {
   text-align: center;
 }

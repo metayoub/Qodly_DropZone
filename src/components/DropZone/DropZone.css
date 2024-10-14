@@ -8,6 +8,9 @@
   justify-content: center;
   flex-direction: column;
 }
+.dropZoneHeader:hover {
+  background-color: rgba(0, 110, 255, 0.075);
+}
 
 .dropZoneHeader p {
   text-align: center;
