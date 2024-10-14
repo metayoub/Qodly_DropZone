@@ -1,6 +1,6 @@
 import { selectResolver, useEnhancedEditor, useRenderer } from '@ws-ui/webform-editor';
 import cn from 'classnames';
-import { FC, useState, DragEvent, useRef, Fragment } from 'react';
+import { FC, useState, DragEvent, useRef } from 'react';
 import './DropZone.css';
 import { IDropZoneProps } from './DropZone.config';
 import axios from 'axios';
@@ -251,7 +251,7 @@ const DropZone: FC<IDropZoneProps> = ({
       <div className="dropZoneFooter">
         {files.length > 0 ? (
           files.map((file, index) => (
-            <Fragment key={index}>
+            <div key={index}>
               <p>{file.name} </p>
               <div onClick={(_e: any) => handleRemoveFile(file)}>
                 <Element
@@ -263,7 +263,7 @@ const DropZone: FC<IDropZoneProps> = ({
                   canvas
                 />
               </div>
-            </Fragment>
+            </div>
           ))
         ) : (
           <p>Not selected file</p>

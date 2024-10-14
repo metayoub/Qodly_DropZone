@@ -43,9 +43,9 @@ To access event data during an event, you can bind it to a function. Here’s an
 
 For more information on working with event data, see the [Qodly web event documentation](https://developer.qodly.com/docs/language/commands/webEvent).
 
-![DropZone Component](public/dropZoneCSS.png)
-
 ## Custom CSS
+
+![DropZone Component](public/dropZoneCSS.png)
 
 ```CSS
 /* General Styles for DropZone */
@@ -71,17 +71,30 @@ self .dropZoneHeader p {
 self .dropZoneFooter {
   background-color: #43ada80F;
   width: 100%;
-  height: 40px;
+  min-height: 40px;
+  max-height: fit-content;
   padding: 8px;
   border-radius: 0px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
   color: black;
   border: none;
 }
 
+.dropZoneFooter > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+}
+
+.dropZoneFooter > div > p {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
 ```
 

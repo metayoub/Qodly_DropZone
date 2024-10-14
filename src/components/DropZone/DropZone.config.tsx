@@ -61,7 +61,7 @@ export default {
       alignContent: 'center',
       justifyContent: 'space-between',
       gap: '5px',
-      height: '300px',
+      minHeight: '300px',
       width: '300px',
       cursor: 'pointer',
       borderRadius: '10px',

@@ -19,13 +19,27 @@
 .dropZoneFooter {
   background-color: rgba(0, 110, 255, 0.075);
   width: 100%;
-  height: 40px;
+  min-height: 40px;
+  max-height: fit-content;
   padding: 8px;
   border-radius: 10px;
   cursor: pointer;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
   color: black;
   border: none;
+}
+
+.dropZoneFooter > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+}
+
+.dropZoneFooter > div > p {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
