@@ -209,11 +209,7 @@ const DropZone: FC<IDropZoneProps> = ({
       className={cn(className, classNames, {
         dragging,
       })}
-      style={{
-        ...style,
-        borderColor: !disabled && dragging ? 'purple' : style?.borderColor,
-        color: !disabled && dragging ? 'purple' : style?.color,
-      }}
+      style={style}
     >
       <div
         className="dropZoneHeader"
