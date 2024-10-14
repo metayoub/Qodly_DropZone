@@ -43,85 +43,41 @@ To access event data during an event, you can bind it to a function. Here’s an
 
 For more information on working with event data, see the [Qodly web event documentation](https://developer.qodly.com/docs/language/commands/webEvent).
 
+![DropZone Component](public/dropZoneCSS.png)
+
 ## Custom CSS
 
 ```CSS
 /* General Styles for DropZone */
-self {
-  transition: border-color 0.3s ease, color 0.3s ease;
-}
-
-/* Styles when dragging files */
-self.dragging {
-  border-color: gray;
-  color: gray;
-}
-
-/* Status Message */
-self p {
-  color: black;
-  margin: 0;
-  font-size: 20px;
-  font-weight: 500;
-}
-
-/* Selected Files Section */
-self .selected-files {
-  margin-top: 20px;
-  border-top: 1px solid #ddd;
-  padding-top: 10px;
-}
-
-self .selected-files-title {
-  font-size: 18px;
-  font-weight: bold;
-  color: #333;
-}
-
-self .selected-file {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-self .selected-file-title {
+self .dropZoneHeader {
+  flex: 1;
+  width: 100%;
+  border: 1px solid #43ada8;
+  border-radius: 10px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 8px 0;
-  border-bottom: 1px solid #eee;
+  justify-content: center;
+  flex-direction: column;
 }
 
-self .selected-file-title:hover {
-  background-color: #f5f5f5;
+self .dropZoneHeader p {
+  text-align: center;
 }
 
-self .selected-file-icon {
+self .dropZoneFooter {
+  background-color: #43ada80F;
+  width: 100%;
+  height: 40px;
+  padding: 8px;
+  border-radius: 0px;
   cursor: pointer;
-  color: aqua;
-  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: black;
+  border: none;
 }
 
-/* Upload Button */
-self .upload-files {
-  margin-top: 20px;
-}
-
-self .upload-button {
-  background-color: transparent;
-  color: #007bff; /* Bootstrap primary color */
-  border: 2px solid #007bff;
-  border-radius: 4px;
-  padding: 10px 15px;
-  font-weight: 600;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-self .upload-button:hover {
-  background-color: #007bff;
-  color: white;
-  border-color: transparent;
-}
 
 ```
 

@@ -1,9 +1,10 @@
-import { useRenderer } from '@ws-ui/webform-editor';
+import { selectResolver, useEnhancedEditor, useRenderer } from '@ws-ui/webform-editor';
 import cn from 'classnames';
-import { FC, useState, DragEvent, useRef } from 'react';
-
+import { FC, useState, DragEvent, useRef, Fragment } from 'react';
+import './DropZone.css';
 import { IDropZoneProps } from './DropZone.config';
 import axios from 'axios';
+import { Element } from '@ws-ui/craftjs-core';
 
 interface FileDetails {
   name: string;
@@ -32,6 +33,7 @@ const DropZone: FC<IDropZoneProps> = ({
     ],
     autoBindEvents: !disabled,
   });
+  const { resolver } = useEnhancedEditor(selectResolver);
   const [dragging, setDragging] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
   const [statusMessage, setStatusMessage] = useState<string>('');
@@ -169,8 +171,7 @@ const DropZone: FC<IDropZoneProps> = ({
     }
   };
 
-  const handleRemoveFile = (event: any, file: File) => {
-    event.stopPropagation();
+  const handleRemoveFile = (file: File) => {
     emit('onfileremove', fileToObject(file));
     setFiles((prev) => prev.filter((f) => f !== file));
   };
@@ -213,59 +214,75 @@ const DropZone: FC<IDropZoneProps> = ({
         borderColor: !disabled && dragging ? 'purple' : style?.borderColor,
         color: !disabled && dragging ? 'purple' : style?.color,
       }}
-      onClick={handleClick}
-      onDrop={handleDrop}
-      onDragOver={handleDragOver}
-      onDragEnter={handleDragEnter}
-      onDragLeave={handleDragLeave}
     >
-      {statusMessage ? (
-        <p style={{ color: statusMessage === 'Upload successful!' ? 'green' : 'red' }}>
-          {statusMessage}
-        </p> // Display the status message
-      ) : !disabled && dragging ? (
-        <p>Drop files here...</p>
-      ) : (
-        <p>Drag & drop files here, or click to select files</p>
-      )}
-      <input
-        ref={inputRef}
-        type="file"
-        accept={allowedFileTypes}
-        multiple
-        style={{ display: 'none' }}
-        onChange={handleFileSelection}
-        disabled={disabled}
-      />
-      <div className="selected-files text-left">
-        {files.length > 0 && (
-          <>
-            <h3 className="selected-files-title text-lg">Selected Files:</h3>
-            <ul className="selected-file">
-              {files.map((file, index) => (
-                <li className="selected-file-title" key={index}>
-                  {file.name}{' '}
-                  <span
-                    className="selected-file-icon text-red-500"
-                    onClick={(e) => handleRemoveFile(e, file)}
-                  >
-                    X
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </>
+      <div
+        className="dropZoneHeader"
+        onClick={handleClick}
+        onDrop={handleDrop}
+        onDragOver={handleDragOver}
+        onDragEnter={handleDragEnter}
+        onDragLeave={handleDragLeave}
+      >
+        <Element
+          style={{ fontSize: '100px' }}
+          id={`dropZoneHeader`}
+          role="dropZoneHeader"
+          is={resolver.Icon}
+          icon="fa-cloud-arrow-up"
+          deletable={false}
+          canvas
+        />
+        {statusMessage ? (
+          <p style={{ color: statusMessage === 'Upload successful!' ? 'green' : 'red' }}>
+            {statusMessage}
+          </p> // Display the status message
+        ) : !disabled && dragging ? (
+          <p>Drop files here...</p>
+        ) : (
+          <p>Drag & drop files here, or click to select files</p>
+        )}
+
+        <input
+          ref={inputRef}
+          type="file"
+          accept={allowedFileTypes}
+          multiple
+          style={{ display: 'none' }}
+          onChange={handleFileSelection}
+          disabled={disabled}
+        />
+      </div>
+      <div className="dropZoneFooter">
+        {files.length > 0 ? (
+          files.map((file, index) => (
+            <Fragment key={index}>
+              <p>{file.name} </p>
+              <div onClick={(_e: any) => handleRemoveFile(file)}>
+                <Element
+                  id={`dropZoneDelete`}
+                  role="dropZoneDelete"
+                  is={resolver.Icon}
+                  icon="fa-trash"
+                  deletable={false}
+                  canvas
+                />
+              </div>
+            </Fragment>
+          ))
+        ) : (
+          <p>Not selected file</p>
         )}
       </div>
       {files.length > 0 && (
-        <div className="upload-files text-right">
-          <button
-            style={{ color: style?.color, borderColor: style?.borderColor }}
-            className="upload-button bg-transparent font-semibold py-2 px-4 border rounded"
-            onClick={handleUpload}
-          >
-            Upload
-          </button>
+        <div className="dropZoneButton" onClick={handleUpload}>
+          <Element
+            id={`dropZoneButton`}
+            role="dropZoneButton"
+            text="Upload"
+            is={resolver.Button}
+            deletable={false}
+            canvas
+          />
         </div>
       )}
     </div>
