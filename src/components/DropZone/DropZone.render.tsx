@@ -253,7 +253,7 @@ const DropZone: FC<IDropZoneProps> = ({
           files.map((file, index) => (
             <div key={index}>
               <p>{file.name} </p>
-              <div onClick={(_e: any) => handleRemoveFile(file)}>
+              <div onClick={() => handleRemoveFile(file)}>
                 <Element
                   id={`dropZoneDelete`}
                   role="dropZoneDelete"
