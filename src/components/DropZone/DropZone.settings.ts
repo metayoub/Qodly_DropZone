@@ -11,17 +11,23 @@ const commonSettings: TSetting[] = [
   {
     key: 'allowedFileTypes',
     label: 'Allowed File Types',
-    type: ESetting.SELECT,
-    defaultValue: '*',
-    options: [
-      { label: 'All', value: '*' },
-      { label: 'Images', value: 'image/*' },
-      { label: 'Video', value: 'video/*' },
-      { label: 'Audio', value: 'audio/*' },
-      { label: 'Documents', value: 'application/*' },
-      { label: 'Text', value: 'text/*' },
-      { label: 'PDF', value: 'application/pdf' },
-      { label: 'ZIP', value: 'application/zip' },
+    type: ESetting.DATAGRID,
+    titleProperty: 'type',
+    data: [
+      {
+        key: 'type',
+        label: 'Type',
+        type: ESetting.SELECT,
+        options: [
+          { label: 'Images', value: 'image/*' },
+          { label: 'Video', value: 'video/*' },
+          { label: 'Audio', value: 'audio/*' },
+          { label: 'Documents', value: 'application/*' },
+          { label: 'Text', value: 'text/*' },
+          { label: 'PDF', value: 'application/pdf' },
+          { label: 'ZIP', value: 'application/zip' },
+        ],
+      },
     ],
   },
   {
