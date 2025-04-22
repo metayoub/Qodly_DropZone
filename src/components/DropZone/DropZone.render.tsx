@@ -15,7 +15,7 @@ interface FileDetails {
 }
 const DropZone: FC<IDropZoneProps> = ({
   url = '',
-  allowedFileTypes = '*',
+  allowedFileTypes = [{ type: '*' }],
   fileLimit = 0,
   fileSizeLimit = 0,
   style,
@@ -39,6 +39,8 @@ const DropZone: FC<IDropZoneProps> = ({
   const [statusMessage, setStatusMessage] = useState<string>('');
   const inputRef = useRef<HTMLInputElement>(null);
 
+  let typeString = [...new Set(allowedFileTypes?.map((item) => item?.type))].join(',');
+
   const fileToObject = (file: File): FileDetails => {
     return {
       name: file.name,
@@ -61,9 +63,7 @@ const DropZone: FC<IDropZoneProps> = ({
         filesArray.map((file) => fileToObject(file)),
       );
       const acceptedFiles = filesArray.filter((file) => {
-        const fileTypePattern = new RegExp(
-          allowedFileTypes.replace(/,/g, '|').replace(/\*/g, '.*'),
-        );
+        const fileTypePattern = new RegExp(typeString.replace(/,/g, '|').replace(/\*/g, '.*'));
         return fileTypePattern.test(file.type);
       });
 
@@ -111,9 +111,7 @@ const DropZone: FC<IDropZoneProps> = ({
         filesArray.map((file) => fileToObject(file)),
       );
       const acceptedFiles = filesArray.filter((file) => {
-        const fileTypePattern = new RegExp(
-          allowedFileTypes.replace(/,/g, '|').replace(/\*/g, '.*'),
-        );
+        const fileTypePattern = new RegExp(typeString.replace(/,/g, '|').replace(/\*/g, '.*'));
         return fileTypePattern.test(file.type);
       });
 
@@ -241,7 +239,7 @@ const DropZone: FC<IDropZoneProps> = ({
         <input
           ref={inputRef}
           type="file"
-          accept={allowedFileTypes}
+          accept={typeString}
           multiple
           style={{ display: 'none' }}
           onChange={handleFileSelection}

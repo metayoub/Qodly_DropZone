@@ -46,7 +46,6 @@ export default {
     datasources: {},
   },
   defaultProps: {
-    allowedFileTypes: '*',
     fileLimit: 0,
     fileSizeLimit: 0,
     style: {
@@ -71,7 +70,7 @@ export default {
 
 export interface IDropZoneProps extends webforms.ComponentProps {
   url?: string;
-  allowedFileTypes?: string;
+  allowedFileTypes?: [{ type: string }];
   fileLimit?: number;
   fileSizeLimit?: number;
 }
