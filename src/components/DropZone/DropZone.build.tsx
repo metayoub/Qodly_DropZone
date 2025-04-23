@@ -16,8 +16,6 @@ const DropZone: FC<IDropZoneProps> = ({ style, className, classNames = [] }) => 
   useDatasourceSub();
   const { resolver } = useEnhancedEditor(selectResolver);
 
-  console.log();
-
   return (
     <div ref={connect} style={style} className={cn(className, classNames)}>
       <div className="dropZoneHeader">
