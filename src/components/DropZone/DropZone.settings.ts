@@ -51,11 +51,21 @@ const Settings: TSetting[] = [
     type: ESetting.GROUP,
     components: commonSettings,
   },
-  ...load(DEFAULT_SETTINGS).filter('datasource'),
+  ...DEFAULT_SETTINGS,
+];
+
+const dataAccessSettings: TSetting[] = [
+  {
+    key: 'datasource',
+    label: 'Qodly Source',
+    type: ESetting.DS_AUTO_SUGGEST,
+    debounceRate: 100,
+  },
 ];
 
 export const BasicSettings: TSetting[] = [
   ...commonSettings,
+  ...dataAccessSettings,
   ...load(BASIC_SETTINGS).filter('style.overflow'),
 ];
 

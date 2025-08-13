@@ -1,6 +1,6 @@
-import { selectResolver, useEnhancedEditor, useRenderer } from '@ws-ui/webform-editor';
+import { selectResolver, useEnhancedEditor, useRenderer, useSources } from '@ws-ui/webform-editor';
 import cn from 'classnames';
-import { FC, useState, DragEvent, useRef } from 'react';
+import { FC, useState, DragEvent, useRef, useEffect } from 'react';
 import './DropZone.css';
 import { IDropZoneProps } from './DropZone.config';
 import axios from 'axios';
@@ -33,13 +33,29 @@ const DropZone: FC<IDropZoneProps> = ({
     ],
     autoBindEvents: !disabled,
   });
+  const {
+    sources: { datasource: ds },
+  } = useSources();
+
   const { resolver } = useEnhancedEditor(selectResolver);
   const [dragging, setDragging] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
   const [statusMessage, setStatusMessage] = useState<string>('');
   const inputRef = useRef<HTMLInputElement>(null);
+  const [urlApi, setUrlApi] = useState<string>(url);
 
   let typeString = [...new Set(allowedFileTypes?.map((item) => item?.type))].join(',');
+
+  useEffect(() => {
+    const fetchValue = async () => {
+      if (!!ds) {
+        let value = await ds.getValue<string>();
+        setUrlApi(value);
+      }
+    };
+
+    fetchValue();
+  }, []);
 
   const fileToObject = (file: File): FileDetails => {
     return {
@@ -180,7 +196,7 @@ const DropZone: FC<IDropZoneProps> = ({
       'onupload',
       files.map((file) => fileToObject(file)),
     );
-    if (disabled || files.length === 0 || url === '') return; // in case.
+    if (disabled || files.length === 0 || urlApi === '') return; // in case.
 
     const formData = new FormData();
     files.forEach((file) => {
@@ -188,7 +204,7 @@ const DropZone: FC<IDropZoneProps> = ({
     });
 
     axios
-      .post(url, formData)
+      .post(urlApi, formData)
       .then((response) => {
         setStatusMessage('Upload successful!');
         emit('onuploadsuccess', response.data);

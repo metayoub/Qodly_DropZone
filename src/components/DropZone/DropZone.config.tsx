@@ -43,7 +43,9 @@ export default {
         value: 'onfileremove',
       },
     ],
-    datasources: {},
+    datasources: {
+      accept: ['string'],
+    },
   },
   defaultProps: {
     fileLimit: 0,
