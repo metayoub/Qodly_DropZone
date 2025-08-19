@@ -47,15 +47,22 @@ const DropZone: FC<IDropZoneProps> = ({
   let typeString = [...new Set(allowedFileTypes?.map((item) => item?.type))].join(',');
 
   useEffect(() => {
-    const fetchValue = async () => {
-      if (!!ds) {
-        let value = await ds.getValue<string>();
-        setUrlApi(value);
-      }
+    if (!ds) return;
+
+    const listener = async (/* event */) => {
+      const value = await ds.getValue<string>();
+      setUrlApi(value);
     };
 
-    fetchValue();
-  }, []);
+    listener();
+
+    ds.addListener('changed', listener);
+
+    return () => {
+      ds.removeListener('changed', listener);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ds]);
 
   const fileToObject = (file: File): FileDetails => {
     return {
