@@ -197,7 +197,77 @@ const DropZone: FC<IDropZoneProps> = ({
     setFiles((prev) => prev.filter((f) => f !== file));
   };
 
-  const handleUpload = (event: any) => {
+  // Compress image using canvas (returns a Promise<File>)
+  // For PNGs: convert to JPEG to achieve actual compression (note: transparency will be lost)
+  const compressImage = (file: File, quality = 0.7): Promise<File> => {
+    return new Promise((resolve, reject) => {
+      const img = new window.Image();
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext('2d');
+          if (!ctx) {
+            reject(new Error('Canvas context not available'));
+            return;
+          }
+          ctx.drawImage(img, 0, 0);
+          // If PNG, convert to JPEG for compression (lossy, transparency lost)
+          const isPng = file.type === 'image/png';
+          canvas.toBlob(
+            (blob) => {
+              if (blob) {
+                // Use .jpg extension if converting PNG to JPEG
+                const newName =
+                  isPng &&
+                  !file.name.toLowerCase().endsWith('.jpg') &&
+                  !file.name.toLowerCase().endsWith('.jpeg')
+                    ? file.name.replace(/\.png$/i, '.jpg')
+                    : file.name;
+                const compressedFile = new File([blob], newName, {
+                  type: isPng ? 'image/jpeg' : file.type,
+                  lastModified: Date.now(),
+                });
+                resolve(compressedFile);
+              } else {
+                reject(new Error('Compression failed'));
+              }
+            },
+            isPng ? 'image/jpeg' : file.type,
+            quality,
+          );
+        };
+        img.onerror = reject;
+        img.src = e.target?.result as string;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleCompressFiles = async (files: File[]): Promise<File[]> => {
+    // Compress all common image types (including those from phones)
+    // Note: Some formats (e.g., HEIC/HEIF) are not supported by browsers/canvas and will fallback to original
+    const compressedFiles = await Promise.all(
+      files.map(async (file) => {
+        if (file.type.startsWith('image/')) {
+          // Try to compress all images, fallback to original if not supported by canvas
+          try {
+            return await compressImage(file);
+          } catch {
+            // For unsupported formats (e.g., HEIC/HEIF), return original file
+            return file;
+          }
+        }
+        return file;
+      }),
+    );
+    return compressedFiles;
+  };
+
+  const handleUpload = async (event: any) => {
     event.stopPropagation();
     emit(
       'onupload',
@@ -205,8 +275,14 @@ const DropZone: FC<IDropZoneProps> = ({
     );
     if (disabled || files.length === 0 || urlApi === '') return; // in case.
 
+    let uploadFiles = files;
+
+    setStatusMessage('Compressing images...');
+    uploadFiles = await handleCompressFiles(files);
+    setStatusMessage('');
+
     const formData = new FormData();
-    files.forEach((file) => {
+    uploadFiles.forEach((file) => {
       formData.append('files', file);
     });
 
