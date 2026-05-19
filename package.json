@@ -2,7 +2,7 @@
   "app_id": "qodly_964b4626361e6f9ea9b5",
   "name": "qodly_dropzone",
   "private": true,
-  "version": "0.5.1",
+  "version": "0.6.0",
   "type": "module",
   "author": {
     "name": "Qodly Team",
@@ -22,8 +22,10 @@
     "@ws-ui/craftjs-utils": "^0.2.3",
     "@ws-ui/webform-editor": "^1.10.3",
     "axios": "^1.13.2",
+    "classnames": "^2.5.1",
     "react": "^17.0.2",
-    "react-dom": "^17.0.2"
+    "react-dom": "^17.0.2",
+    "react-icons": "^5.4.0"
   },
   "devDependencies": {
     "@module-federation/vite": "^1.9.4",
@@ -47,5 +49,11 @@
     "@ws-ui/icons": "^1.10.3",
     "@ws-ui/shared": "^1.10.4-rc2",
     "@ws-ui/store": "^1.10.4-rc1"
+  },
+  "overrides": {
+    "@typescript-eslint/typescript-estree": {
+      "minimatch": "^9.0.9"
+    },
+    "postcss": "^8.5.15"
   }
 }

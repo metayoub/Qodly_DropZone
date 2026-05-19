@@ -1,4 +1,11 @@
-import { selectResolver, useEnhancedEditor, useRenderer, useSources } from '@ws-ui/webform-editor';
+import {
+  selectResolver,
+  useEnhancedEditor,
+  useI18n,
+  useLocalization,
+  useRenderer,
+  useSources,
+} from '@ws-ui/webform-editor';
 import cn from 'classnames';
 import { FC, useState, DragEvent, useRef, useEffect } from 'react';
 import './DropZone.css';
@@ -13,6 +20,14 @@ interface FileDetails {
   lastModified: number;
   webkitRelativePath?: string;
 }
+
+type StatusMessage = {
+  key: string;
+  defaultValue: string;
+  values?: Record<string, string | number>;
+  type: 'success' | 'error';
+};
+
 const DropZone: FC<IDropZoneProps> = ({
   url = '',
   allowedFileTypes = [{ type: '*' }],
@@ -33,6 +48,8 @@ const DropZone: FC<IDropZoneProps> = ({
     ],
     autoBindEvents: !disabled,
   });
+  const { i18n } = useI18n();
+  const { selected: lang } = useLocalization();
   const {
     sources: { datasource: ds },
   } = useSources();
@@ -40,11 +57,30 @@ const DropZone: FC<IDropZoneProps> = ({
   const { resolver } = useEnhancedEditor(selectResolver);
   const [dragging, setDragging] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
-  const [statusMessage, setStatusMessage] = useState<string>('');
+  const [statusMessage, setStatusMessage] = useState<StatusMessage | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [urlApi, setUrlApi] = useState<string>(url);
 
   let typeString = [...new Set(allowedFileTypes?.map((item) => item?.type))].join(',');
+
+  const translate = (
+    key: string,
+    defaultValue: string,
+    values?: Record<string, string | number>,
+  ) => {
+    const translation = i18n?.keys?.[key]?.[lang] ?? i18n?.keys?.[key]?.default ?? defaultValue;
+
+    if (!values) return translation;
+
+    return Object.entries(values).reduce(
+      (message, [name, value]) => message.replaceAll(`{${name}}`, String(value)),
+      translation,
+    );
+  };
+
+  const translatedStatusMessage = statusMessage
+    ? translate(statusMessage.key, statusMessage.defaultValue, statusMessage.values)
+    : '';
 
   useEffect(() => {
     if (!ds) return;
@@ -108,16 +144,26 @@ const DropZone: FC<IDropZoneProps> = ({
           }
         });
         if (!isFileSizeAccepted) {
-          setStatusMessage(`File "${fileName}" exceeds the size limit of ${fileSizeLimit} MB.`);
+          setStatusMessage({
+            key: 'dropZoneFileSizeLimitExceeded',
+            defaultValue: 'File "{fileName}" exceeds the size limit of {fileSizeLimit} MB.',
+            values: { fileName, fileSizeLimit },
+            type: 'error',
+          });
           return prevFiles;
         }
 
         if (fileLimit > 0 && prevFiles.length + newFiles.length > fileLimit) {
-          setStatusMessage(`You can only upload up to ${fileLimit} files.`);
+          setStatusMessage({
+            key: 'dropZoneFileLimitExceeded',
+            defaultValue: 'You can only upload up to {fileLimit} files.',
+            values: { fileLimit },
+            type: 'error',
+          });
           return prevFiles;
         }
 
-        setStatusMessage('');
+        setStatusMessage(null);
         return [...prevFiles, ...newFiles];
       });
       e.target.value = '';
@@ -157,16 +203,26 @@ const DropZone: FC<IDropZoneProps> = ({
         });
 
         if (!isFileSizeAccepted) {
-          setStatusMessage(`File "${fileName}" exceeds the size limit of ${fileSizeLimit} MB.`);
+          setStatusMessage({
+            key: 'dropZoneFileSizeLimitExceeded',
+            defaultValue: 'File "{fileName}" exceeds the size limit of {fileSizeLimit} MB.',
+            values: { fileName, fileSizeLimit },
+            type: 'error',
+          });
           return prevFiles;
         }
 
         if (fileLimit > 0 && prevFiles.length + newFiles.length > fileLimit) {
-          setStatusMessage(`You can only upload up to ${fileLimit} files.`);
+          setStatusMessage({
+            key: 'dropZoneFileLimitExceeded',
+            defaultValue: 'You can only upload up to {fileLimit} files.',
+            values: { fileLimit },
+            type: 'error',
+          });
           return prevFiles;
         }
 
-        setStatusMessage('');
+        setStatusMessage(null);
         return [...prevFiles, ...newFiles];
       });
       e.dataTransfer.clearData();
@@ -213,14 +269,22 @@ const DropZone: FC<IDropZoneProps> = ({
     axios
       .post(urlApi, formData)
       .then((response) => {
-        setStatusMessage('Upload successful!');
+        setStatusMessage({
+          key: 'dropZoneUploadSuccessful',
+          defaultValue: 'Upload successful!',
+          type: 'success',
+        });
         emit('onuploadsuccess', response.data);
         setFiles([]); // Clear selected files after upload if desired
       })
       .catch((error) => {
         console.error('Error during upload:', error);
         emit('onuploadfailure', error);
-        setStatusMessage('Upload failed. Please try again.');
+        setStatusMessage({
+          key: 'dropZoneUploadFailed',
+          defaultValue: 'Upload failed. Please try again.',
+          type: 'error',
+        });
       });
   };
 
@@ -250,13 +314,18 @@ const DropZone: FC<IDropZoneProps> = ({
           canvas
         />
         {statusMessage ? (
-          <p style={{ color: statusMessage === 'Upload successful!' ? 'green' : 'red' }}>
-            {statusMessage}
+          <p style={{ color: statusMessage.type === 'success' ? 'green' : 'red' }}>
+            {translatedStatusMessage}
           </p> // Display the status message
         ) : !disabled && dragging ? (
-          <p>Drop files here...</p>
+          <p>{translate('dropZoneDropFilesHere', 'Drop files here...')}</p>
         ) : (
-          <p>Drag & drop files here, or click to select files</p>
+          <p>
+            {translate(
+              'dropZoneDragAndDropFiles',
+              'Drag & drop files here, or click to select files',
+            )}
+          </p>
         )}
 
         <input
@@ -287,7 +356,7 @@ const DropZone: FC<IDropZoneProps> = ({
             </div>
           ))
         ) : (
-          <p>Not selected file</p>
+          <p>{translate('dropZoneNoSelectedFile', 'Not selected file')}</p>
         )}
       </div>
       {files.length > 0 && (
@@ -295,7 +364,7 @@ const DropZone: FC<IDropZoneProps> = ({
           <Element
             id={`dropZoneButton`}
             role="dropZoneButton"
-            text="Upload"
+            text={translate('dropZoneUpload', 'Upload')}
             is={resolver.Button}
             deletable={false}
             canvas
